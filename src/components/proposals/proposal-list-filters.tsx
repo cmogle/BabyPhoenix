@@ -1,13 +1,7 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 
 const READINESS_OPTIONS = [
@@ -21,6 +15,7 @@ const READINESS_OPTIONS = [
 export function ProposalListFilters() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [status, setStatus] = useState(searchParams.get("status") ?? "all");
 
   function setFilter(key: string, value: string) {
     const params = new URLSearchParams(searchParams.toString());
@@ -40,21 +35,20 @@ export function ProposalListFilters() {
         defaultValue={searchParams.get("q") ?? ""}
         onChange={(e) => setFilter("q", e.target.value)}
       />
-      <Select
-        defaultValue={searchParams.get("status") ?? "all"}
-        onValueChange={(v) => v && setFilter("status", v)}
+      <select
+        className="h-8 w-44 rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none dark:bg-input/30"
+        value={status}
+        onChange={(e) => {
+          setStatus(e.target.value);
+          setFilter("status", e.target.value);
+        }}
       >
-        <SelectTrigger className="w-44">
-          <SelectValue placeholder="Status" />
-        </SelectTrigger>
-        <SelectContent>
-          {READINESS_OPTIONS.map((opt) => (
-            <SelectItem key={opt.value} value={opt.value}>
-              {opt.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+        {READINESS_OPTIONS.map((opt) => (
+          <option key={opt.value} value={opt.value}>
+            {opt.label}
+          </option>
+        ))}
+      </select>
     </div>
   );
 }
