@@ -2,7 +2,10 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { X } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const READINESS_OPTIONS = [
   { value: "all", label: "All Statuses" },
@@ -28,27 +31,44 @@ export function ProposalListFilters() {
   }
 
   return (
-    <div className="flex gap-3">
-      <Input
-        placeholder="Search proposals..."
-        className="max-w-xs"
-        defaultValue={searchParams.get("q") ?? ""}
-        onChange={(e) => setFilter("q", e.target.value)}
-      />
-      <select
-        className="h-8 w-44 rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none dark:bg-input/30"
-        value={status}
-        onChange={(e) => {
-          setStatus(e.target.value);
-          setFilter("status", e.target.value);
-        }}
-      >
-        {READINESS_OPTIONS.map((opt) => (
-          <option key={opt.value} value={opt.value}>
-            {opt.label}
-          </option>
-        ))}
-      </select>
+    <div>
+      <div className="flex gap-3">
+        <Input
+          placeholder="Search proposals... (/)"
+          className="max-w-xs"
+          defaultValue={searchParams.get("q") ?? ""}
+          onChange={(e) => setFilter("q", e.target.value)}
+        />
+        <Select
+          value={status}
+          onValueChange={(value) => {
+            const v = value ?? "all";
+            setStatus(v);
+            setFilter("status", v);
+          }}
+        >
+          <SelectTrigger className="w-44">
+            <SelectValue placeholder="All Statuses" />
+          </SelectTrigger>
+          <SelectContent>
+            {READINESS_OPTIONS.map((opt) => (
+              <SelectItem key={opt.value} value={opt.value}>
+                {opt.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      {status !== "all" && (
+        <div className="flex gap-2 mt-2">
+          <Badge variant="secondary" className="gap-1 text-xs">
+            Status: {READINESS_OPTIONS.find(o => o.value === status)?.label}
+            <button onClick={() => { setStatus("all"); setFilter("status", "all"); }} className="ml-1 hover:text-foreground">
+              <X className="h-3 w-3" />
+            </button>
+          </Badge>
+        </div>
+      )}
     </div>
   );
 }

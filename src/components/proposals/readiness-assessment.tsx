@@ -7,25 +7,13 @@ import {
   AlertCircle,
   AlertTriangle,
   CheckCircle2,
-  ArrowRight,
 } from "lucide-react";
+import { DimensionalBars } from "./dimensional-bars";
 
 const STATUS_CONFIG = {
-  not_ready: {
-    label: "Not Ready",
-    variant: "destructive" as const,
-    icon: AlertCircle,
-  },
-  partially_ready: {
-    label: "Partially Ready",
-    variant: "secondary" as const,
-    icon: AlertTriangle,
-  },
-  ready_for_review: {
-    label: "Ready for Review",
-    variant: "default" as const,
-    icon: CheckCircle2,
-  },
+  not_ready: { label: "Not Ready", className: "bg-rose-500/15 text-rose-500 border-rose-500/20", icon: AlertCircle },
+  partially_ready: { label: "Partially Ready", className: "bg-amber-500/15 text-amber-500 border-amber-500/20", icon: AlertTriangle },
+  ready_for_review: { label: "Ready for Review", className: "bg-teal-500/15 text-teal-500 border-teal-500/20", icon: CheckCircle2 },
 };
 
 export function ReadinessAssessment({
@@ -47,25 +35,37 @@ export function ReadinessAssessment({
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="text-base">Readiness Assessment</CardTitle>
-          <Badge variant={config.variant} className="gap-1">
+          <Badge className={`gap-1 ${config.className}`}>
             <Icon className="h-3.5 w-3.5" />
             {config.label}
           </Badge>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
+        <DimensionalBars findings={findings} />
+        <Separator className="my-4" />
         {missing.length > 0 && (
           <div>
-            <h4 className="text-sm font-medium text-destructive mb-2">
-              Missing
+            <h4 className="text-sm font-medium text-rose-500 mb-2">
+              Missing Information
             </h4>
             <ul className="space-y-1.5">
               {missing.map((f, i) => (
                 <li key={i} className="flex gap-2 text-sm">
-                  <AlertCircle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
+                  <AlertCircle className="h-4 w-4 text-rose-500 shrink-0 mt-0.5" />
                   <div>
                     <span className="font-medium">{f.field}:</span>{" "}
                     {f.message}
+                    {f.suggestion && (
+                      <details className="mt-1">
+                        <summary className="text-xs text-muted-foreground cursor-pointer hover:text-foreground">
+                          Why? How to improve
+                        </summary>
+                        <p className="text-xs text-muted-foreground mt-1 pl-1 border-l-2 border-muted">
+                          {f.suggestion}
+                        </p>
+                      </details>
+                    )}
                   </div>
                 </li>
               ))}
@@ -75,18 +75,23 @@ export function ReadinessAssessment({
 
         {weak.length > 0 && (
           <div>
-            <h4 className="text-sm font-medium text-yellow-500 mb-2">Weak</h4>
+            <h4 className="text-sm font-medium text-amber-500 mb-2">Needs Strengthening</h4>
             <ul className="space-y-1.5">
               {weak.map((f, i) => (
                 <li key={i} className="flex gap-2 text-sm">
-                  <AlertTriangle className="h-4 w-4 text-yellow-500 shrink-0 mt-0.5" />
+                  <AlertTriangle className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
                   <div>
                     <span className="font-medium">{f.field}:</span>{" "}
                     {f.message}
                     {f.suggestion && (
-                      <p className="text-muted-foreground mt-0.5">
-                        {f.suggestion}
-                      </p>
+                      <details className="mt-1">
+                        <summary className="text-xs text-muted-foreground cursor-pointer hover:text-foreground">
+                          Why? How to improve
+                        </summary>
+                        <p className="text-xs text-muted-foreground mt-1 pl-1 border-l-2 border-muted">
+                          {f.suggestion}
+                        </p>
+                      </details>
                     )}
                   </div>
                 </li>
@@ -97,11 +102,11 @@ export function ReadinessAssessment({
 
         {strong.length > 0 && (
           <div>
-            <h4 className="text-sm font-medium text-green-500 mb-2">Strong</h4>
+            <h4 className="text-sm font-medium text-teal-500 mb-2">Looking Good</h4>
             <ul className="space-y-1.5">
               {strong.map((f, i) => (
                 <li key={i} className="flex gap-2 text-sm">
-                  <CheckCircle2 className="h-4 w-4 text-green-500 shrink-0 mt-0.5" />
+                  <CheckCircle2 className="h-4 w-4 text-teal-500 shrink-0 mt-0.5" />
                   <div>
                     <span className="font-medium">{f.field}:</span>{" "}
                     {f.message}
@@ -120,7 +125,9 @@ export function ReadinessAssessment({
               <ol className="space-y-1.5">
                 {nextActions.map((action, i) => (
                   <li key={i} className="flex gap-2 text-sm">
-                    <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary/10 text-xs font-medium shrink-0">
+                      {i + 1}
+                    </span>
                     {action}
                   </li>
                 ))}

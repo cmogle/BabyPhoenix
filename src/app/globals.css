@@ -46,9 +46,23 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+  --color-status-strong: var(--status-strong);
+  --color-status-weak: var(--status-weak);
+  --color-status-missing: var(--status-missing);
+  --color-status-neutral: var(--status-neutral);
 }
 
 :root {
+  --motion-instant: 100ms;
+  --motion-fast: 150ms;
+  --motion-normal: 250ms;
+  --motion-moderate: 350ms;
+  --motion-slow: 500ms;
+  --motion-expressive: 700ms;
+  --ease-productive: cubic-bezier(0.2, 0, 0.38, 0.9);
+  --ease-expressive: cubic-bezier(0.4, 0.14, 0.3, 1);
+  --ease-entrance: cubic-bezier(0, 0, 0.38, 0.9);
+  --ease-exit: cubic-bezier(0.2, 0, 1, 0.9);
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -81,6 +95,10 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --status-strong: oklch(70.4% 0.14 182.503);
+  --status-weak: oklch(76.9% 0.188 70.08);
+  --status-missing: oklch(64.5% 0.246 16.439);
+  --status-neutral: oklch(86.9% 0.022 252.894);
 }
 
 .dark {
@@ -115,6 +133,10 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+  --status-strong: oklch(77.7% 0.152 181.912);
+  --status-weak: oklch(82.8% 0.189 84.429);
+  --status-missing: oklch(71.2% 0.194 13.428);
+  --status-neutral: oklch(44.6% 0.043 257.281);
 }
 
 @layer base {
@@ -127,4 +149,23 @@
   html {
     @apply font-sans;
   }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media print {
+  /* Hide non-essential elements */
+  nav, aside, header, .no-print { display: none !important; }
+  /* Reset backgrounds for paper */
+  body { background: white !important; color: black !important; }
+  /* Optimize layout */
+  main { padding: 0 !important; }
+  .print\:shadow-none { box-shadow: none !important; }
+  .print\:border-0 { border: 0 !important; }
 }

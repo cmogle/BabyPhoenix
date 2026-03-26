@@ -56,6 +56,7 @@ export const proposals = pgTable("proposals", {
   id: uuid("id").defaultRandom().primaryKey(),
   userId: uuid("user_id").notNull(),
   currentVersion: integer("current_version").default(1).notNull(),
+  isExemplar: boolean("is_exemplar").default(false).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -127,6 +128,31 @@ export const readinessRules = pgTable("readiness_rules", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+// Reviewer comments on proposals
+export const reviewerComments = pgTable("reviewer_comments", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  proposalId: uuid("proposal_id")
+    .references(() => proposals.id, { onDelete: "cascade" })
+    .notNull(),
+  userId: uuid("user_id").notNull(),
+  userEmail: text("user_email").notNull(),
+  content: text("content").notNull(),
+  field: text("field"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Field guidance - org-specific help text per field
+export const fieldGuidance = pgTable("field_guidance", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  fieldKey: text("field_key").notNull().unique(),
+  title: text("title").notNull(),
+  guidance: text("guidance").notNull(),
+  examples: jsonb("examples").$type<string[]>(),
+  antiPatterns: jsonb("anti_patterns").$type<string[]>(),
+  active: boolean("active").default(true).notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
 // Relations
 export const taxonomyCategoriesRelations = relations(
   taxonomyCategories,
@@ -147,6 +173,7 @@ export const taxonomyEntriesRelations = relations(
 
 export const proposalsRelations = relations(proposals, ({ many }) => ({
   versions: many(proposalVersions),
+  comments: many(reviewerComments),
 }));
 
 export const proposalVersionsRelations = relations(
@@ -166,3 +193,15 @@ export const assessmentsRelations = relations(assessments, ({ one }) => ({
     references: [proposalVersions.id],
   }),
 }));
+
+export const reviewerCommentsRelations = relations(
+  reviewerComments,
+  ({ one }) => ({
+    proposal: one(proposals, {
+      fields: [reviewerComments.proposalId],
+      references: [proposals.id],
+    }),
+  })
+);
+
+export const fieldGuidanceRelations = relations(fieldGuidance, () => ({}));
